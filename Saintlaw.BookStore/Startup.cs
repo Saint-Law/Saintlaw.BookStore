@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Saintlaw.BookStore.Data;
+using Saintlaw.BookStore.Repository;
 
 namespace Saintlaw.BookStore
 {
@@ -26,6 +28,7 @@ namespace Saintlaw.BookStore
 #if DEBUG
             services.AddRazorPages().AddRazorRuntimeCompilation();
 #endif
+            services.AddScoped<BookRepository, BookRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

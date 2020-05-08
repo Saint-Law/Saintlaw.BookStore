@@ -1,15 +1,63 @@
-﻿using Saintlaw.BookStore.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Saintlaw.BookStore.Data;
+using Saintlaw.BookStore.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Saintlaw.BookStore.Repository
 {
     public class BookRepository
     {
-        public List<BookModel> GetAllBooks()
+        private readonly BookStoreContext _context = null;
+
+        public BookRepository(BookStoreContext context)
         {
+            _context = context;
+        }
+
+        public async Task<int> AddNewBook(BookModel model)
+        {
+            var newBook = new Books()
+            {
+                Author = model.Author,
+                CreatedOn = DateTime.UtcNow,
+                Description = model.Description,
+                Title = model.Title,
+                TotalPages = model.TotalPages,
+                UpdatedOn = DateTime.UtcNow
+            };
+
+            await _context.Books.AddAsync(newBook);
+            await _context.SaveChangesAsync();
+
+            return newBook.Id;
+        }
+        public async Task<List<BookModel>> GetAllBooks()
+        {
+            var books = new List<BookModel>();
+            var allbooks = await _context.Books.ToListAsync();
+            if (allbooks?.Any() == true)
+            {
+               foreach(var book in allbooks)
+                {
+                    books.Add(new BookModel()
+                    {
+                        Author = book.Author,
+                        Category = book.Category,
+                        Description = book.Description,
+                        Id = book.Id,
+                        Language = book.Language,
+                        Title = book.Title,
+                        TotalPages = book.TotalPages,
+                    });
+                }
+                
+            }
             return DataSource();
         }
         public BookModel GetBookById(int id)
