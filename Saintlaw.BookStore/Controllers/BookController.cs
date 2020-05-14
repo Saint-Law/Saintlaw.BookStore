@@ -19,16 +19,16 @@ namespace Saintlaw.BookStore.Controllers
         public async Task<ViewResult> GetAllBooks()
         {
             var data= await _bookRepository.GetAllBooks();
-
+                
             return View(data);
         }
 
         [Route("book-details/(id)", Name = "bookDetailsRoute")]
-        public ViewResult GetBook(int id)
+        public async Task<ViewResult> GetBook(int id)
         {
-            var data = _bookRepository.GetBookById(id);
+            var data = await _bookRepository.GetBookById(id);
 
-            return View(data);
+            return View(data); 
         }
         public List<BookModel> SearchBooks(string bookName, string authorName)
         {
@@ -45,11 +45,17 @@ namespace Saintlaw.BookStore.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNewBook(BookModel bookModel)
         {
-           int id = await _bookRepository.AddNewBook(bookModel);
-            if (id > 0)
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(AddNewBook), new { isSuccess = true, bookId = id});
+                int id = await _bookRepository.AddNewBook(bookModel);
+                if (id > 0)
+                {
+                    return RedirectToAction(nameof(AddNewBook), new { isSuccess = true, bookId = id });
+                }
             }
+            //ViewBag.IsSuccess = false;
+            //ViewBag.BookId = 0;
+
             return View();
         }
     }
